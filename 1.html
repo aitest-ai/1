@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一單元：AI 幫我寫作業 - 課後複習站</title>
+    <style>
+        /* --- 全域設定 --- */
+        :root {
+            --primary-color: #4A90E2; /* 科技藍 */
+            --accent-color: #F5A623;  /* 警示橘 */
+            --think-color: #9B59B6;   /* 思考紫 */
+            --bg-color: #F9F9F9;
+            --text-color: #333;
+            --card-bg: #FFF;
+        }
+
+        body {
+            font-family: "微軟正黑體", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 2.5em; }
+        .subtitle { font-size: 1.2em; opacity: 0.9; margin-top: 10px; }
+
+        /* --- 通用卡片樣式 --- */
+        .section-title {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            font-weight: bold;
+            border-bottom: 3px solid var(--accent-color);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column; /* 手機版預設垂直排列 */
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* 電腦版調整為左右排列 */
+        @media (min-width: 600px) {
+            .card { flex-direction: row; }
+            .card.reverse { flex-direction: row-reverse; } /* 交錯排列 */
+            .card-img-area { width: 50%; }
+            .card-text-area { width: 50%; }
+        }
+
+        /* --- 圖片預留區樣式 (Placeholder) --- */
+        .img-placeholder {
+            width: 100%;
+            /* 【修改點 1】強制設定為 16:9 比例 (1920x1080) */
+            aspect-ratio: 16 / 9; 
+            background-color: #eee;
+            border: 3px dashed #bbb;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #777;
+            font-weight: bold;
+            text-align: center;
+            padding: 0; /* 移除 padding 以確保圖片填滿 */
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative; /* 為了 hover 效果定位 */
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        /* 加入滑鼠懸停效果，提示可點擊 */
+        .img-placeholder:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.02);
+            cursor: zoom-in; /* 滑鼠游標變成放大鏡 */
+        }
+
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持比例填滿容器，多餘部分裁切 */
+            display: block;
+        }
+
+        /* --- 重點整理區塊 --- */
+        .concept-box {
+            background-color: #E3F2FD;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        
+        .concept-title { font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: #0056b3; }
+
+        .warning-box {
+            background-color: #FFF3E0;
+            border: 2px solid var(--accent-color);
+            color: #D35400;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* --- 行動準則 (Action Guide) --- */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .action-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 5px solid var(--accent-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .action-icon { font-size: 3em; margin-bottom: 10px; display: block; }
+
+        /* --- 動腦想一想區塊 (Thinking Section) --- */
+        .thinking-box {
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .thinking-box::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background-color: var(--think-color);
+        }
+
+        .thinking-title {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: var(--think-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scenario-desc {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-prompt {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .question-prompt::before {
+            content: "🤔 ";
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background-color: #333;
+            color: #bbb;
+        }
+
+        /* --- 【修改點 2】燈箱 (Lightbox) 樣式 --- */
+        .lightbox {
+            display: none; /* 預設隱藏 */
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9); /* 黑色半透明背景 */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85%;
+            border: 5px solid #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s;
+        }
+
+        /* 關閉按鈕樣式 */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--accent-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 圖片放大動畫 */
+        @keyframes zoomIn {
+            from {transform:scale(0.8); opacity: 0;} 
+            to {transform:scale(1); opacity: 1;}
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 頁首 -->
+    <header>
+        <div class="container">
+            <h1>第一單元：AI 幫我寫作業</h1>
+            <div class="subtitle">小心！AI 也會亂說話？學習辨識資訊真假</div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- 第一部分：故事回顧 -->
+        <div style="text-align: center;">
+            <div class="section-title">📖 故事回顧</div>
+        </div>
+
+        <!-- 場景 1 -->
+        <div class="card">
+            <div class="card-img-area">
+                <div class="img-placeholder">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczMk3429SZuWGCQHaFSWa5JqbpbEUm4L7RiGC3z79qLgINSkgy3-QRWNwctiGx7Ft07JNaSwCgABKem1hr6xfrhjcO4bSwx2XbIkIZqot2DRjhDJZ6U=w1920-h1080" alt="場景圖：主角忘記寫作業" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n請放上主角忘記寫作業，同學建議用AI的遊戲截圖';">
+                </div>
+            </div>
+            <div class="card-text-area">
+                <h3>1. 糟糕！忘記寫作業了</h3>
+                <p>明天就要交「臺灣古蹟」的分組報告了，但是我完全忘記這件事！同學紹軒建議我：「你可以用 AI 幫忙寫，但你一定要自己查證喔！」</p>
+            </div>
+        </div>
+
+        <!-- 場景 2 -->
+        <div class="card reverse">
+            <div class="card-img-area">
+                <div class="img-placeholder">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczP71OZNomiskIN-198HATqd-KZstmEoS1nIFbVcObjYAD3mzdBksdad2Dg2IV3gL7OLGPZq42ojPdobj7VdtRqLRHauYQwSnsuvrSZrAFU0wgiKkdo=w1920-h1080" alt="場景圖：AI給出錯誤資訊" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n請放上論文圖3-13\n顯示AI說赤崁樓在新北市的畫面';">
+                </div>
+            </div>
+            <div class="card-text-area">
+                <h3>2. AI 產生的資料...怪怪的？</h3>
+                <p>我請生成式 AI 幫我整理赤崁樓的資料，結果它寫得頭頭是道，但是...等等！<strong>它說赤崁樓位於「新北市」？</strong>這好像不太對吧？</p>
+            </div>
+        </div>
+
+        <!-- 場景 3 -->
+        <div class="card">
+            <div class="card-img-area">
+                <div class="img-placeholder">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczMEUMuypJUP4fmzwaY1lj_Qg5ofXKsHw4FpvOFvjgO62hVwnNYi0gm24LwB31VihbfkuLyvRW6jBA7m1a7CUwF14sAzYOF28-6Mft1Wv4GVknghq6Q=w1920-h1080" alt="場景圖：尷尬的報告" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n請放上老師出現提醒主角要查證的畫面';">
+                </div>
+            </div>
+            <div class="card-text-area">
+                <h3>3. 尷尬的報告</h3>
+                <p>快樂的把報告內容直接複製貼上到簡報後，在臺上卻被抓出內容錯誤百出。老師提醒我：「使用 AI 輔助沒問題，但你有<strong>查證</strong>資料的正確性嗎？如果資料錯了，責任在誰身上呢？」</p>
+            </div>
+        </div>
+
+        <!-- 第二部分：重點整理 -->
+        <div style="text-align: center;">
+            <div class="section-title">💡 為什麼 AI 會說錯話？</div>
+        </div>
+
+        <div class="concept-box">
+            <div class="concept-title">1. AI 其實是個「接龍高手」</div>
+            <p>生成式 AI (GAI) 並不是真的像人類一樣「理解」事實。它是根據讀過的龐大資料，用機率去預測下一個字該接什麼。就像在玩文字接龍一樣，它很會串句子，但不一定知道內容是不是真的。</p>
+        </div>
+
+        <div class="concept-box">
+            <div class="concept-title">2. AI 的幻覺 (Hallucination)</div>
+            <p>當 AI 遇到不知道的事情，為了讓對話接下去，它有時候會「一本正經地胡說八道」，這在專業術語上稱為<strong>「幻覺」</strong>。就像故事中，它把台南的赤崁樓搬到了新北市。</p>
+        </div>
+
+        <div class="warning-box">
+            重要觀念：AI 生成的內容「不一定正確」，我們不能完全依賴它！
+        </div>
+
+        <!-- 第三部分：行動準則 -->
+        <div style="text-align: center;">
+            <div class="section-title">🛡️ 我該怎麼做？</div>
+        </div>
+
+        <div class="action-grid">
+            <div class="action-item">
+                <span class="action-icon">🛑</span>
+                <h3>停 (Stop)</h3>
+                <p>不要直接複製貼上 (Copy & Paste)。看到 AI 的回答，先保持懷疑的態度。</p>
+            </div>
+            <div class="action-item">
+                <span class="action-icon">🔍</span>
+                <h3>看 (Check)</h3>
+                <p>進行<strong>查證</strong>。查閱課本、政府官網或百科全書，確認資料是否正確。</p>
+            </div>
+            <div class="action-item">
+                <span class="action-icon">🙋</span>
+                <h3>負責 (Responsibility)</h3>
+                <p>作業是你的，不是 AI 的。如果你交出的報告有錯，要負責任的是你自己喔！</p>
+            </div>
+        </div>
+
+        <!-- 第四部分：舉一反三（延伸思考） -->
+        <div style="text-align: center;">
+            <div class="section-title">🧠 動腦想一想</div>
+            <p style="max-width: 600px; margin: 0 auto 30px auto;">
+                AI 的「幻覺」不只發生在作業上，還可能出現在我們熟悉的文化、地理或故事中。請看看以下幾個案例，試著思考看看：
+            </p>
+        </div>
+
+        <!-- 案例 A：地理常識 -->
+        <div class="thinking-box">
+            <div class="thinking-title">🗺️ 案例一：南投衝浪去？</div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <div class="img-placeholder">
+                        <img src="https://lh3.googleusercontent.com/pw/AP1GczMUJXdW2XPT1E0iJmVMNDS-7l53ircELOdWjt0FUJkr-TooSSLyVt6Trmt_cOAwBkuHdf12wjbdEM1u6zyJcXaHURzmzI8lsmNZwFtl1L49DPCebjo=w1920-h1080" alt="地理情境圖" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n建議放一張海邊或台灣地圖的圖片';">
+                    </div>
+                </div>
+                <div style="flex: 2;">
+                    <div class="scenario-desc">
+                        <strong>情境：</strong><br>
+                        阿源週末想去海邊玩，他問 AI：「推薦幾個南投縣最棒的海水浴場，可以衝浪的那種。」<br>
+                        AI 認真地回答：「推薦您去南投的『日月潭黃金沙灘』，那裡的浪況非常適合初學者衝浪，還有海龜出沒喔！」
+                    </div>
+                    <div class="question-prompt">
+                        想一想：南投縣有靠海嗎？如果你真的聽信 AI 的話帶著衝浪板出發了，到了現場會發生什麼事？
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 案例 B：在地文化 -->
+        <div class="thinking-box">
+            <div class="thinking-title">🍲 案例二：恐怖的美食介紹？</div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <div class="img-placeholder">
+                        <img src="https://lh3.googleusercontent.com/pw/AP1GczMBnI90xSt57hTx4Az4-3-lzvZu-CFOBYz30MKAY0SloxIkoJYs7j-b8yZKvpQtXskZlv_bRlamwRTx78f7Q3_g8taVQrFlXV9pI7mWGay_a6S4Wf8=w1920-h1080" alt="文化情境圖" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n建議放一張棺材板(食物)的圖片';">
+                    </div>
+                </div>
+                <div style="flex: 2;">
+                    <div class="scenario-desc">
+                        <strong>情境：</strong><br>
+                        小光正在向外國筆友介紹台灣美食，他問 AI：「請問台南著名的美食『棺材板』是什麼？」<br>
+                        AI 回答：「棺材板是一種台灣傳統的喪禮供品，通常是用木頭做的，用來表達對祖先的敬意，現在很少人吃了。」
+                    </div>
+                    <div class="question-prompt">
+                        想一想：AI 似乎誤會了什麼！如果小光直接把這段介紹寄給外國筆友，筆友來台灣時敢吃這道美食嗎？
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 案例 C：文學創作 -->
+        <div class="thinking-box">
+            <div class="thinking-title">📖 案例三：孫悟空大戰外星人？</div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <div class="img-placeholder">
+                        <img src="https://lh3.googleusercontent.com/pw/AP1GczO2UarsjrPSC3XFWxmzDGtH7f_60yh_gXqDpI8PkBCHZ8qQ-kkTyoUUubbvyO1wgXH7i6cMkdJV_yCI1dLOqojwl-nz03r-ghLbafd4JUeM3uUo19Q=w1920-h1080" alt="文學情境圖" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n建議放一張西遊記或孫悟空的圖片';">
+                    </div>
+                </div>
+                <div style="flex: 2;">
+                    <div class="scenario-desc">
+                        <strong>情境：</strong><br>
+                        小美不想讀書，但老師規定要寫《西遊記》的讀後感。她偷懶問 AI：「請幫我寫出孫悟空大戰外星人的那個章節大意。」<br>
+                        AI 回答：「在《西遊記》第 101 回中，孫悟空遇到了來自火星的使者，他們想搶走唐僧的袈裟，最後孫悟空用金箍棒打壞了飛碟。」
+                    </div>
+                    <div class="question-prompt">
+                        想一想：《西遊記》原著真的有外星人嗎？如果小美把這個內容交給老師，老師會覺得她有創意，還是覺得她根本沒看書？
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 案例 D：歷史邏輯 -->
+        <div class="thinking-box">
+            <div class="thinking-title">🕰️ 案例四：時空錯亂的名言</div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <div class="img-placeholder">
+                        <img src="https://lh3.googleusercontent.com/pw/AP1GczNgTR4D2IuruNTZinF2aMYrXRaq9A0YjCCGSKO0zMQhnNVVZ7PrONOWENon6c3NQN46p2gVB3Hz6kPEmmaCXoKmiNCMM83fIRK3-44br_I9oKxx-bI=w1920-h1080" alt="歷史情境圖" onerror="this.style.display='none';this.parentNode.innerText='【圖片位置】\n建議放一張愛因斯坦的照片';">
+                    </div>
+                </div>
+                <div style="flex: 2;">
+                    <div class="scenario-desc">
+                        <strong>情境：</strong><br>
+                        小華正在寫一篇關於愛因斯坦的傳記，他請 AI 幫忙找一些愛因斯坦的名言。<br>
+                        AI 條列出了一句：「不要相信你在網路上看到的所有東西——愛因斯坦，1920年。」
+                    </div>
+                    <div class="question-prompt">
+                        想一想：1920 年代有網際網路嗎？如果不思考就引用這句話，讀者會怎麼看這篇文章？
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>本教材僅供學術研究使用</p>
+        <p style="font-size: 0.9em; margin-top: 10px;">國立臺北教育大學 數學暨資訊教育學系</p>
+    </footer>
+
+    <!-- 【修改點 3】燈箱 (Lightbox) HTML 與 JavaScript -->
+    <!-- 燈箱容器 -->
+    <div id="myLightbox" class="lightbox">
+        <!-- 關閉按鈕 -->
+        <span class="close-btn">&times;</span>
+        <!-- 燈箱內的圖片 -->
+        <img class="lightbox-content" id="img01">
+    </div>
+
+    <script>
+        // 取得燈箱元素
+        var modal = document.getElementById("myLightbox");
+        var modalImg = document.getElementById("img01");
+        var closeBtn = document.getElementsByClassName("close-btn")[0];
+
+        // 取得所有圖片預留區內的圖片
+        var images = document.querySelectorAll('.img-placeholder img');
+
+        // 為每一張圖片加入點擊事件
+        images.forEach(function(img) {
+            img.addEventListener('click', function() {
+                // 只有當圖片載入成功且不是預設的錯誤訊息時才打開燈箱
+                if(this.complete && this.naturalHeight !== 0) {
+                    modal.style.display = "flex";
+                    modalImg.src = this.src;
+                }
+            });
+        });
+
+        // 點擊關閉按鈕 (x) 關閉燈箱
+        closeBtn.onclick = function() { 
+            modal.style.display = "none";
+        }
+
+        // 點擊燈箱背景區域也可以關閉
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // 按下 ESC 鍵也可以關閉
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                modal.style.display = "none";
+            }
+        });
+    </script>
+
+</body>
+</html>
